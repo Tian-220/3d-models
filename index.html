@@ -69,9 +69,9 @@
       color: #4285f4;
     }
 
-    /* --- 查看器视图样式 (原有样式) --- */
+    /* --- 查看器视图样式 --- */
     #viewer-view {
-      display: none; /* 默认隐藏，有参数时才显示 */
+      display: none; 
     }
 
     model-viewer { 
@@ -130,7 +130,7 @@
       background: #f0f0f0;
     }
 
-    /* 模态框样式 (原有) */
+    /* 模态框样式 */
     .image-modal {
       display: none;
       position: fixed;
@@ -179,7 +179,7 @@
 </head>
 <body>
 
-  <!-- 视图1: 模型列表 (当没有URL参数时显示) -->
+  <!-- 视图1: 模型列表 -->
   <div id="list-view">
     <h1 class="header-title">3D 模型展示库</h1>
     <div class="model-grid" id="modelGrid">
@@ -187,7 +187,7 @@
     </div>
   </div>
 
-  <!-- 视图2: 单个模型查看器 (当有URL参数时显示) -->
+  <!-- 视图2: 单个模型查看器 -->
   <div id="viewer-view">
     <a href="." class="back-btn">← 返回列表</a>
     
@@ -213,33 +213,33 @@
   <script>
     // ======================================
     // 1. 配置区域：在这里添加你的所有模型
+    // 注意：picFile 必须和你文件夹里的图片文件名完全一致
     // ======================================
     const models = [
       { 
         name: "示例模型 1", 
-        modelFile: "model1.glb",   // 你的3D文件名
-        imgFile: "pic1.jpg"     // 你的图片文件名
+        modelFile: "model1.glb",   
+        picFile: "pic1.jpg"     
       },
       { 
         name: "示例模型 2", 
         modelFile: "model2.glb", 
-        imgFile: "pic2.png" 
-      },
-      // 复制上面的块，添加更多模型...
+        picFile: "pic2.png" 
+      }
+      // 继续添加...
     ];
 
     // ======================================
-    // 2. 逻辑判断：是显示列表还是显示详情？
+    // 2. 逻辑判断
     // ======================================
     const params = new URLSearchParams(window.location.search);
     const modelName = params.get('model');
-    const imageName = params.get('pic');
+    // 【统一】这里改为获取 'pic' 参数
+    const picName = params.get('pic'); 
 
     if (modelName) {
-      // 如果 URL 里有 ?model=xxx，则显示查看器
-      showViewer(modelName, imageName);
+      showViewer(modelName, picName);
     } else {
-      // 否则显示列表
       showList();
     }
 
@@ -253,15 +253,16 @@
       const grid = document.getElementById('modelGrid');
       
       models.forEach(item => {
-        // 生成独立链接: index.html?model=xxx&img=yyy
-        const linkUrl = `?model=${item.modelFile}&img=${item.imgFile}`;
+        // 【统一】生成链接时使用 &pic=
+        const linkUrl = `?model=${item.modelFile}&pic=${item.picFile}`;
         
         const card = document.createElement('a');
         card.href = linkUrl;
         card.className = 'model-card';
         
+        // 【统一】这里使用 item.picFile
         card.innerHTML = `
-          <img src="./${item.picFile}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+          <img src="./${item.picFile}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300x200?text=Image+Error'">
           <div class="model-info">
             <div class="model-name">${item.name}</div>
             <div class="model-link-text">点击查看详情</div>
@@ -273,17 +274,21 @@
     }
 
     // ======================================
-    // 4. 函数：显示查看器 (原有逻辑)
+    // 4. 函数：显示查看器
     // ======================================
     function showViewer(model, pic) {
       document.getElementById('list-view').style.display = 'none';
       document.getElementById('viewer-view').style.display = 'block';
 
       const finalModel = model || 'model.glb';
-      const finalImage = img || 'image1.jpg';
+      // 【统一】这里直接使用参数 pic
+      const finalPic = pic || 'default.jpg'; 
+
+      console.log("加载模型:", './' + finalModel);
+      console.log("加载图片:", './' + finalPic);
 
       document.getElementById('modelViewer').src = './' + finalModel;
-      document.getElementById('showImage').src = './' + finalImage;
+      document.getElementById('showImage').src = './' + finalPic;
 
       // 模态框逻辑
       const modal = document.getElementById('imageModal');
